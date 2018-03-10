@@ -1,0 +1,15 @@
+#Idea
+/.idea/
+/protomodel.iml
+
+#Eclipse
+/.classpath
+/.project
+/.settings/
+
+#Maven
+/target
+
+#Gradle
+/.gradle/
+
