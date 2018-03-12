@@ -12,4 +12,5 @@
 
 #Gradle
 /.gradle/
-
+/build/
+/out/
