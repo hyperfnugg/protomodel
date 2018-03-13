@@ -17,10 +17,10 @@ data class Felt(
 )
 
 val inntekt = Felt("inntekt", number, "inntekt", text)
-val bolig_id = Felt("bolig.id", number, "bolig[boligId].id")
+val bolig_id = Felt("bolig.id", number, "id")
 val bolig_prosentAndel = Felt("bolig.prosentAndel", number)
-val konto_kontonummer = Felt("konto.kontonummer", number, "bolig[boligId].lånekonto", text)
-val konto_saldo = Felt("konto.saldo", number, "bolig[boligId].lånesum")
+val konto_kontonummer = Felt("konto.kontonummer", number, "lanekonto", text)
+val konto_saldo = Felt("konto.saldo", number, "lanesum")
 val formue = Felt("formue", number)
 
 val standardModell = listOf(inntekt, bolig_id, bolig_prosentAndel, konto_kontonummer, konto_saldo, formue)

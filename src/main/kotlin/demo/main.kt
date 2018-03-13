@@ -1,7 +1,6 @@
 package demo
 
-fun getGreeting(): String {
-
+fun main(args: Array<String>) {
     val melding = Melding(
             inntekt = "5000",
             boliger = listOf(
@@ -19,11 +18,7 @@ fun getGreeting(): String {
                     )
             )
     )
-
-
-    return beanToVerdiSett(melding).toString()
-}
-
-fun main(args: Array<String>) {
-    println(getGreeting())
+    val verdiSett = beanToVerdiSett(melding)
+    val bean = verdiSettToBean(verdiSett)
+    println(bean.toString())
 }
