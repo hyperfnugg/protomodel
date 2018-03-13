@@ -30,7 +30,6 @@ val bolig = BeanGroup(
                 felt = bolig_id,
                 settIVerdi = { verdi, id -> verdi.copy(bolig = id) },
                 hentFraVerdi = { it.bolig }
-
         ),
         beanPath = "boliger",
         felter = listOf(bolig_id, konto_kontonummer, konto_saldo, boligTeller, boligNevner)
@@ -55,7 +54,7 @@ fun verdierForGruppe(gruppe: BeanGroup, bean: JsonNode): List<Verdi> {
                 ?: listOf()
     }
     val ret = fraFelter.plus(fraGrupper)
-    return if(gruppe.id != null) {
+    return if (gruppe.id != null) {
         val idFelt = ret.find { it.felt == gruppe.id.felt }
         ret.map { gruppe.id.settIVerdi(it, idFelt!!.value as Int) }
     } else {
@@ -101,10 +100,8 @@ fun gruppeTilBean(gruppe: BeanGroup, verdier: List<Verdi>): Any? {
                 .groupBy { gruppe.id.hentFraVerdi(it) }
                 .values
                 .map { filtrertGruppeToBean(gruppe, it) }
-//                .let { mapOf(gruppe.beanPath to it) }
     } else {
         filtrertGruppeToBean(gruppe, verdier)
-//                .let { mapOf(gruppe.beanPath to it) }
 
     }
 }
@@ -131,7 +128,6 @@ fun fiksNestedePather(noder: List<Pair<List<String>, Any?>>): Map<String, Any?> 
             .filter { it.first.size <= 1 }
             .map { Pair(it.first[0], it.second) }
             .toMap()
-
 
     val levelNext = noder.filter { it.first.size > 1 }
             .groupBy { it.first[0] }

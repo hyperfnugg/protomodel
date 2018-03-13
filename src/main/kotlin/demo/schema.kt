@@ -14,7 +14,10 @@ data class Felt(
         val xmlPath: String? = null,
         val xmlType: Type? = type,
         val temporal: Boolean = false
-)
+) : Selector {
+    override fun select(verdier: List<Verdi>): Verdi? =
+            verdier.find { it.felt == this }
+}
 
 val inntekt = Felt("inntekt", number, "inntekt", text)
 val bolig_id = Felt("bolig.id", number, "id")
@@ -25,6 +28,9 @@ val formue = Felt("formue", number)
 
 val standardModell = listOf(inntekt, bolig_id, bolig_prosentAndel, konto_kontonummer, konto_saldo, formue)
 
+interface Selector {
+    fun select(verdier: List<Verdi>): Verdi?;
+}
 
 data class Verdi(
         val felt: Felt,
@@ -32,6 +38,43 @@ data class Verdi(
         val konto: Int? = null,
         val bolig: Int? = null
 )
+
+
+typealias Operation = (List<Verdi>) -> List<Verdi>
+
+fun addVerdi(verdi: Verdi): Operation {
+    return { verdier: List<Verdi> ->
+        verdier.plus(verdi)
+    }
+}
+
+val noop: Operation = { verdier: List<Verdi> -> verdier }
+
+
+//fun andelFraBrøkTilProsent(tellerSelector: Selector, nevnerSelector: Selector): (List<Verdi>) -> Operation {
+//    return { data: List<Verdi> ->
+//        {
+//            val teller = tellerSelector.select(data)
+//            val nevner = nevnerSelector.select(data)
+//            if (teller == null || nevner == null) {
+//                noop
+//            } else {
+//                teller.value
+//                        .let { it as Int }
+//                        .let { it * 100 }
+//                        .let { it / (nevner.value as Int) }
+//                        .let {
+//                            addVerdi(teller.copy(
+//                                    felt = bolig_prosentAndel,
+//                                    value = it
+//
+//                            ))
+//                        }
+//            }
+//        }
+//    }
+//}
+
 
 data class VerdiSett(val verdier: List<Verdi>)
 

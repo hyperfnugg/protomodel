@@ -19,6 +19,7 @@ fun main(args: Array<String>) {
             )
     )
     val verdiSett = beanToVerdiSett(melding)
+    println(verdiSett.toString())
     val bean = verdiSettToBean(verdiSett)
     println(bean.toString())
 }

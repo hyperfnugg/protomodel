@@ -1,0 +1,112 @@
+src:
+{
+	inntekt: "5000",
+	boliger: [ {
+			id: 555,
+			eierandel: {teller: 20, nevner: 50}
+			lånekonto: "555 1223",
+			lånesum: 100000
+		},{
+			id: 700,
+			eierandel: {teller: 10, nevner: 50}
+			lånekonto: "666 2115",
+			lånesum: 200000
+		}
+	]
+
+}
+
+dst:
+
+
+schema:
+{
+inntekt: {
+	xmlPath: "",
+	type: int
+	xmlType: string
+},
+bolig.id: {
+	xmlPath: "bolig[boligId].id",
+	type: int
+},
+bolig.prosentAndel: {
+	type: int,
+},
+bolig.teller: {
+	xmlPath: "bolig[boligId].eierandel.teller",
+	type: int
+	temporal
+},
+bolig.nevner: {
+	xmlPath: "bolig[boligId].eierandel.nevner",
+	type: int
+	temporal
+},
+konto.kontonummer: {
+	xmlPath: "bolig[boligId].lånekonto",
+	type: int
+	xmlType: string
+},
+konto.saldo: {
+	xmlPath: "bolig[boligId].lånesum",
+	type: int
+},
+formue: {
+	type: int
+},
+}
+
+values: {
+{type:inntekt, value: 5000},
+{type:formue, value: -30000},
+{type: bolig.id, value: 555, bolig: 555},
+{type: bolig.prosentAndel, value: 40, bolig: 555},
+{type: konto.kontonummer, value: 5551223, konto: 5551223, bolig: 555},
+{type: konto.lånesum, value: 10000, konto: 5551223, bolig: 555},
+{type: bolig.id, value: 700, bolig: 700},
+{type: bolig.prosentAndel, value: 20, bolig: 700},
+{type: konto.kontonummer, value: 6662115, konto: 6662115, bolig: 700},
+{type: konto.lånesum, value: 20000, konto: 6662115, bolig: 700},
+}
+
+refiner: data -> data
+
+groupRefiner: groupData -> refiner
+
+groupRefiner andelFraBrøkTilProsent = group -> {
+	selector teller: group.felt("teller");
+	selector nevner: group.felt("nevner");
+	return data ->
+		brøk( teller(data), nevner(data))
+		|> stream
+		|> rundTilPosisjon(0.01)
+		|> prosent
+		|> addField(data, contextOf(teller))
+}
+
+groupRefiner splittUtKonto = group -> {
+	selector kontonummer: group.felt("kontonummer");
+	filter kontoFelter: = group.felter("kontonummer", "lånesum");
+	return data ->
+		kontofelter(data)
+		|> addContext("konto", kontonummer, data)
+}
+
+refiner summerFormue = data -> {
+	selector inntekt = fields("inntekt")
+	filter lån = fields("konto.lånesum")
+	return data ->
+		lån(data)
+		|> sum
+		|> contextOfField(inntekt, data)
+}
+
+context: {aar: 2017, skattepliktig: 123456}
+
+xmlToDomain = xml ->
+	xmlMapping(schema, context)
+	|> bolig.refine(andelFraBrøk)
+	|> bolig.refine(splittUtkonto)
+	|> summerFormue
+	|> filterTransientFields
